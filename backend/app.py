@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Request
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import List, Dict
@@ -99,20 +99,22 @@ async def chat(req: ChatRequest):
     messages.append({"role": "user", "content": req.message})
 
     async with httpx.AsyncClient(timeout=120.0) as client:
-        resp = await client.post(
-            f"{os.getenv('AI_API_BASE')}/chat/completions",
-            headers={
-                "Authorization": f"Bearer {os.getenv('AI_API_KEY')}",
-                "Content-Type": "application/json",
-            },
-            json={
-                "model": os.getenv("AI_MODEL", "auto"),
-                "messages": messages,
-                "temperature": 0.8,
-            },
-        )
-        resp.raise_for_status()
-        data = resp.json()
-
-    answer = data["choices"][0]["message"]["content"]
-    return {"answer": answer}
+        try:
+            resp = await client.post(
+                f"{os.getenv('AI_API_BASE')}/chat/completions",
+                headers={
+                    "Authorization": f"Bearer {os.getenv('AI_API_KEY')}",
+                    "Content-Type": "application/json",
+                },
+                json={
+                    "model": os.getenv("AI_MODEL", "auto"),
+                    "messages": messages,
+                    "temperature": 0.8,
+                },
+            )
+            resp.raise_for_status()
+            data = await resp.json()
+            answer = data["choices"][0]["message"]["content"]
+            return {"answer": answer}
+        except Exception as e:
+            return {"answer": f"Error: {str(e)}"}
