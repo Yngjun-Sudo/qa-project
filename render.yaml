@@ -1,0 +1,15 @@
+services:
+  - type: web
+    name: qa-project-backend
+    env: python
+    buildCommand: pip install -r backend/requirements.txt
+    startCommand: cd backend && python -m uvicorn app:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: AI_API_KEY
+        sync: false
+      - key: AI_API_BASE
+        value: https://api.iamhc.cn/v1
+      - key: AI_MODEL
+        value: step-3.5-flash
+      - key: PYTHON_VERSION
+        value: 3.11.0

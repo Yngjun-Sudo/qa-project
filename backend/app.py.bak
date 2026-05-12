@@ -1,0 +1,72 @@
+from fastapi import FastAPI
+from pydantic import BaseModel
+from typing import List, Optional
+import openai
+import os
+from dotenv import load_dotenv
+from fastapi.middleware.cors import CORSMiddleware
+
+# 加载环境变量
+load_dotenv()
+
+# 初始化 OpenAI 客户端
+client = openai.AsyncOpenAI(
+    api_key=os.getenv("AI_API_KEY"),
+    base_url=os.getenv("AI_API_BASE")
+)
+
+class Message(BaseModel):
+    role: str
+    content: str
+
+class AskRequest(BaseModel):
+    question: str
+    context: str = ""
+    history: Optional[List[Message]] = []
+
+app = FastAPI(title="QA Project")
+
+# CORS 配置
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+@app.get("/")
+def root():
+    return {"message": "QA Project API is running"}
+
+@app.get("/health")
+def health():
+    return {"status": "healthy"}
+
+@app.post("/ask")
+async def ask(request: AskRequest):
+    """调用 AI API 生成回答（支持多轮对话）"""
+    try:
+        messages = []
+
+        # 添加系统提示词
+        if request.context:
+            messages.append({"role": "system", "content": request.context})
+
+        # 添加历史对话
+        for msg in request.history:
+            messages.append({"role": msg.role, "content": msg.content})
+
+        # 添加当前问题
+        messages.append({"role": "user", "content": request.question})
+
+        response = await client.chat.completions.create(
+            model=os.getenv("AI_MODEL", "auto"),
+            messages=messages
+        )
+        answer = response.choices[0].message.content
+        return {"question": request.question, "answer": answer, "context": request.context}
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        return {"question": request.question, "answer": f"Error: {str(e)}", "context": request.context}
