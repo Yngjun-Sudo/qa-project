@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>QA Project - AI 问答</title>
+    <title>战略顾问 - Strategic Advisor</title>
     <style>
         * {
             margin: 0;
@@ -13,7 +13,7 @@
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #0f172a;
             height: 100vh;
             display: flex;
             justify-content: center;
@@ -22,67 +22,46 @@
 
         .container {
             width: 90%;
-            max-width: 800px;
-            height: 80vh;
-            background: white;
-            border-radius: 16px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            max-width: 900px;
+            height: 90vh;
+            background: #1e293b;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
             display: flex;
             flex-direction: column;
             overflow: hidden;
+            border: 1px solid #334155;
         }
 
         .header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #1e40af 0%, #7c3aed 100%);
             color: white;
-            padding: 16px 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+            padding: 20px 24px;
+            border-bottom: 1px solid #334155;
         }
 
-        .header-left h1 {
-            font-size: 20px;
+        .header h1 {
+            font-size: 22px;
+            font-weight: 700;
             margin-bottom: 4px;
         }
 
-        .header p {
+        .header .subtitle {
             font-size: 13px;
             opacity: 0.9;
-        }
-
-        .mode-toggle {
-            display: flex;
-            background: rgba(255,255,255,0.2);
-            border-radius: 20px;
-            overflow: hidden;
-        }
-
-        .mode-btn {
-            padding: 8px 16px;
-            border: none;
-            background: transparent;
-            color: white;
-            cursor: pointer;
-            font-size: 13px;
-            transition: background 0.3s;
-        }
-
-        .mode-btn.active {
-            background: rgba(255,255,255,0.3);
-            font-weight: bold;
         }
 
         .chat-container {
             flex: 1;
             overflow-y: auto;
-            padding: 20px;
-            background: #f5f5f5;
+            padding: 24px;
+            background: #0f172a;
         }
 
         .message {
-            margin-bottom: 16px;
+            margin-bottom: 20px;
             display: flex;
+            gap: 12px;
             align-items: flex-start;
         }
 
@@ -90,135 +69,180 @@
             flex-direction: row-reverse;
         }
 
-        .message-content {
-            max-width: 70%;
-            padding: 12px 16px;
-            border-radius: 16px;
-            word-wrap: break-word;
-            white-space: pre-wrap;
-            line-height: 1.6;
+        .avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            flex-shrink: 0;
         }
 
-        .message.user .message-content {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border-bottom-right-radius: 4px;
+        .message.assistant .avatar {
+            background: linear-gradient(135deg, #1e40af, #7c3aed);
+        }
+
+        .message.user .avatar {
+            background: linear-gradient(135deg, #059669, #0d9488);
+        }
+
+        .message-content {
+            max-width: 75%;
+            padding: 14px 18px;
+            border-radius: 12px;
+            line-height: 1.7;
+            font-size: 14.5px;
+            white-space: pre-wrap;
         }
 
         .message.assistant .message-content {
-            background: white;
-            color: #333;
-            border-bottom-left-radius: 4px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            background: #1e293b;
+            color: #e2e8f0;
+            border: 1px solid #334155;
+        }
+
+        .message.user .message-content {
+            background: linear-gradient(135deg, #1e40af, #7c3aed);
+            color: white;
         }
 
         .input-container {
-            padding: 20px;
-            background: white;
-            border-top: 1px solid #eee;
-            display: flex;
-            gap: 10px;
+            padding: 20px 24px;
+            background: #1e293b;
+            border-top: 1px solid #334155;
         }
 
-        .input-container input {
+        .input-wrapper {
+            display: flex;
+            gap: 12px;
+            align-items: flex-end;
+        }
+
+        .input-wrapper textarea {
             flex: 1;
-            padding: 12px 16px;
-            border: 2px solid #ddd;
-            border-radius: 24px;
-            font-size: 16px;
+            padding: 14px 18px;
+            border: 2px solid #334155;
+            border-radius: 12px;
+            font-size: 15px;
+            background: #0f172a;
+            color: #e2e8f0;
+            resize: none;
             outline: none;
             transition: border-color 0.3s;
+            font-family: inherit;
+            min-height: 50px;
+            max-height: 120px;
         }
 
-        .input-container input:focus {
-            border-color: #667eea;
+        .input-wrapper textarea:focus {
+            border-color: #6366f1;
         }
 
-        .input-container button {
-            padding: 12px 24px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        .input-wrapper textarea::placeholder {
+            color: #64748b;
+        }
+
+        .send-btn {
+            padding: 14px 24px;
+            background: linear-gradient(135deg, #1e40af, #7c3aed);
             color: white;
             border: none;
-            border-radius: 24px;
+            border-radius: 12px;
             cursor: pointer;
-            font-size: 16px;
-            transition: transform 0.2s;
+            font-size: 15px;
+            transition: transform 0.2s, opacity 0.2s;
+            flex-shrink: 0;
         }
 
-        .input-container button:hover {
+        .send-btn:hover {
             transform: scale(1.05);
+            opacity: 0.9;
         }
 
-        .input-container button:disabled {
-            background: #ccc;
+        .send-btn:disabled {
+            opacity: 0.5;
             cursor: not-allowed;
             transform: none;
         }
 
         .loading {
-            display: inline-block;
-            animation: pulse 1.5s infinite;
+            display: inline-flex;
+            gap: 4px;
+            padding: 14px 18px;
         }
 
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
+        .loading span {
+            width: 8px;
+            height: 8px;
+            background: #6366f1;
+            border-radius: 50%;
+            animation: bounce 1.4s infinite ease-in-out both;
+        }
+
+        .loading span:nth-child(1) { animation-delay: -0.32s; }
+        .loading span:nth-child(2) { animation-delay: -0.16s; }
+
+        @keyframes bounce {
+            0%, 80%, 100% { transform: scale(0); }
+            40% { transform: scale(1.0); }
         }
 
         .clear-btn {
-            padding: 6px 12px;
-            background: #dc3545;
-            color: white;
-            border: none;
+            padding: 8px 16px;
+            background: transparent;
+            color: #94a3b8;
+            border: 1px solid #334155;
             border-radius: 8px;
             cursor: pointer;
             font-size: 13px;
+            transition: all 0.2s;
+            margin-top: 12px;
+            width: 100%;
         }
 
-        .status-bar {
-            padding: 8px 20px;
-            background: #e8f5e9;
-            font-size: 12px;
-            color: #2e7d32;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+        .clear-btn:hover {
+            background: #334155;
+            color: #e2e8f0;
         }
 
-        .status-bar.advisor {
-            background: #fff3e0;
-            color: #e65100;
+        /* 滚动条 */
+        .chat-container::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .chat-container::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .chat-container::-webkit-scrollbar-thumb {
+            background: #334155;
+            border-radius: 3px;
         }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
-            <div class="header-left">
-                <h1>🤖 QA Project</h1>
-                <p id="modeLabel">AI 智能问答系统</p>
-            </div>
-            <div class="mode-toggle">
-                <button class="mode-btn active" id="btnQA" onclick="switchMode('qa')">问答模式</button>
-                <button class="mode-btn" id="btnAdvisor" onclick="switchMode('advisor')">战略顾问</button>
-            </div>
-        </div>
-
-        <div class="status-bar" id="statusBar">
-            <span id="statusText">💬 问答模式：你提问，AI 回答</span>
-            <button class="clear-btn" onclick="clearChat()">清空对话</button>
+            <h1>🧠 战略顾问</h1>
+            <div class="subtitle">你的专属战略顾问 · 激活思维 · 理清脉络 · 制定计划</div>
         </div>
 
         <div class="chat-container" id="chatContainer"></div>
 
         <div class="input-container">
-            <input
-                type="text"
-                id="userInput"
-                placeholder="输入你的问题..."
-                onkeypress="if(event.key==='Enter') sendMessage()"
-            />
-            <button onclick="sendMessage()" id="sendBtn">发送</button>
+            <div class="input-wrapper">
+                <textarea
+                    id="userInput"
+                    placeholder="说说你的想法、项目、或者困扰你的问题..."
+                    rows="1"
+                    oninput="this.style.height='auto'; this.style.height=this.scrollHeight+'px'"
+                    onkeypress="handleKeyPress(event)"
+                ></textarea>
+                <button class="send-btn" id="sendBtn" onclick="sendMessage()">发送</button>
+            </div>
+            <button class="clear-btn" onclick="clearChat()">🗑️ 清空对话</button>
         </div>
     </div>
 
@@ -226,47 +250,44 @@
         const chatContainer = document.getElementById('chatContainer');
         const userInput = document.getElementById('userInput');
         const sendBtn = document.getElementById('sendBtn');
-        const statusText = document.getElementById('statusText');
-        const statusBar = document.getElementById('statusBar');
 
-        let currentMode = 'qa';
         let conversationHistory = [];
 
-        const INITIAL_MESSAGES = {
-            qa: '你好！我是 QA Project 助手，有什么可以帮你的吗？',
-            advisor: '老大好！我是你的战略顾问。别把我当工具人，咱俩是搭档。\n\n你现在脑子里有什么想法、项目、或者乱七八糟的线索？都说出来，越详细越好，我来帮你理得明明白白。'
-        };
+        const INITIAL_MESSAGE = `老大好！我是你的战略顾问。
+
+别把我当工具人，咱俩是搭档。
+
+**你现在脑子里有什么？**
+- 有个项目想法但没理清楚？
+- 遇到瓶颈不知道怎么突破？
+- 想制定一个行动计划但缺思路？
+
+说出来，越详细越好。我来帮你把乱七八糟的线索理得明明白白。`;
 
         // 初始化
-        addMessage('assistant', INITIAL_MESSAGES[currentMode]);
+        addMessage('assistant', INITIAL_MESSAGE);
         userInput.focus();
 
-        function switchMode(mode) {
-            currentMode = mode;
-            document.getElementById('btnQA').classList.toggle('active', mode === 'qa');
-            document.getElementById('btnAdvisor').classList.toggle('active', mode === 'advisor');
-
-            if (mode === 'qa') {
-                statusText.textContent = '💬 问答模式：你提问，AI 回答';
-                statusBar.className = 'status-bar';
-                userInput.placeholder = '输入你的问题...';
-            } else {
-                statusText.textContent = '🧠 战略顾问模式：AI 主动提问，帮你理清思路';
-                statusBar.className = 'status-bar advisor';
-                userInput.placeholder = '说说你的想法，越详细越好...';
+        function handleKeyPress(e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendMessage();
             }
-
-            clearChat();
         }
 
         function addMessage(role, content) {
             const messageDiv = document.createElement('div');
             messageDiv.className = `message ${role}`;
 
+            const avatar = document.createElement('div');
+            avatar.className = 'avatar';
+            avatar.textContent = role === 'user' ? '👤' : '🧠';
+
             const contentDiv = document.createElement('div');
             contentDiv.className = 'message-content';
             contentDiv.textContent = content;
 
+            messageDiv.appendChild(avatar);
             messageDiv.appendChild(contentDiv);
             chatContainer.appendChild(messageDiv);
             chatContainer.scrollTop = chatContainer.scrollHeight;
@@ -279,41 +300,44 @@
             messageDiv.className = 'message assistant';
             messageDiv.id = 'loadingMessage';
 
-            const contentDiv = document.createElement('div');
-            contentDiv.className = 'message-content';
-            contentDiv.innerHTML = '<span class="loading">正在思考中...</span>';
+            const avatar = document.createElement('div');
+            avatar.className = 'avatar';
+            avatar.textContent = '🧠';
 
-            messageDiv.appendChild(contentDiv);
+            const loadingDiv = document.createElement('div');
+            loadingDiv.className = 'loading';
+            loadingDiv.innerHTML = '<span></span><span></span><span></span>';
+
+            messageDiv.appendChild(avatar);
+            messageDiv.appendChild(loadingDiv);
             chatContainer.appendChild(messageDiv);
             chatContainer.scrollTop = chatContainer.scrollHeight;
         }
 
         function removeLoadingMessage() {
             const loadingMessage = document.getElementById('loadingMessage');
-            if (loadingMessage) {
-                loadingMessage.remove();
-            }
+            if (loadingMessage) loadingMessage.remove();
         }
 
         async function sendMessage() {
-            const question = userInput.value.trim();
-            if (!question) return;
+            const message = userInput.value.trim();
+            if (!message) return;
 
-            addMessage('user', question);
+            addMessage('user', message);
             userInput.value = '';
+            userInput.style.height = 'auto';
             sendBtn.disabled = true;
             addLoadingMessage();
 
             try {
-                const response = await fetch('https://qa-project-backend.onrender.com/ask', {
+                const response = await fetch('https://qa-project-backend.onrender.com/chat', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                     },
                     body: JSON.stringify({
-                        question: question,
+                        message: message,
                         history: conversationHistory.slice(0, -1),
-                        mode: currentMode,
                     })
                 });
 
@@ -328,7 +352,7 @@
                 addMessage('assistant', data.answer);
             } catch (error) {
                 removeLoadingMessage();
-                addMessage('assistant', `错误：${error.message}`);
+                addMessage('assistant', `⚠️ 错误：${error.message}`);
             } finally {
                 sendBtn.disabled = false;
                 userInput.focus();
@@ -338,7 +362,7 @@
         function clearChat() {
             chatContainer.innerHTML = '';
             conversationHistory = [];
-            addMessage('assistant', INITIAL_MESSAGES[currentMode]);
+            addMessage('assistant', INITIAL_MESSAGE);
         }
     </script>
 </body>
