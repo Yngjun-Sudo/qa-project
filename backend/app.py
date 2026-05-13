@@ -10,7 +10,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 DEFAULT_AI_API_BASE = "https://api.iamhc.cn/v1"
-DEFAULT_AI_MODEL = "auto"
+DEFAULT_AI_MODEL = "step-3.5-flash"
 STALE_API_HOSTS = ("52mx.net",)
 INVALID_MODELS = ("gpt-5.5", "codex")
 
