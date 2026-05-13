@@ -7,13 +7,9 @@
     <style>
         *{margin:0;padding:0;box-sizing:border-box}
         body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#0a0f1a;height:100vh;overflow:hidden;color:#e2e8f0}
-
-        /* Layout */
         .app{display:flex;height:100vh}
         .sidebar{width:220px;background:#111827;border-right:1px solid #1e293b;display:flex;flex-direction:column;flex-shrink:0}
         .main{flex:1;display:flex;flex-direction:column;overflow:hidden}
-
-        /* Sidebar */
         .sidebar-brand{padding:20px 16px;border-bottom:1px solid #1e293b}
         .sidebar-brand h1{font-size:18px;font-weight:600;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:2px}
         .sidebar-brand .sub{font-size:11px;color:#64748b}
@@ -23,22 +19,17 @@
         .nav-item:hover{background:#1e293b;color:#e2e8f0}
         .nav-item.active{background:#1e1b4b;color:#a5b4fc;font-weight:500}
         .nav-item .icon{width:18px;text-align:center;font-size:14px}
-        .nav-badge{margin-left:auto;background:#dc2626;color:white;font-size:10px;padding:1px 6px;border-radius:10px;font-weight:600}
-
-        /* System status bar at bottom */
         .sidebar-status{padding:12px 16px;border-top:1px solid #1e293b;font-size:11px}
         .status-dot{display:inline-block;width:6px;height:6px;border-radius:50%;margin-right:4px}
-        .status-dot.ok{background:#22c55e}
-        .status-dot.err{background:#ef4444}
-        .status-dot.loading{background:#f59e0b;animation:pulse 1s infinite}
+        .status-dot.ok{background:#22c55e}.status-dot.err{background:#ef4444}.status-dot.loading{background:#f59e0b;animation:pulse 1s infinite}
         @keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
-
-        /* Main content area */
-        .page-header{padding:16px 24px;border-bottom:1px solid #1e293b;background:#111827;display:flex;align-items:center;justify-content:space-between}
+        .page{display:flex;flex-direction:column;flex:1}
+        .page-header{padding:16px 24px;border-bottom:1px solid #1e293b;background:#111827;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
         .page-header h2{font-size:16px;font-weight:500}
-        .page-body{flex:1;overflow-y:auto;padding:0}
+        .page-body{flex:1;overflow-y:auto}
 
-        /* ========== Chat Module ========== */
+        /* Chat */
+        .chat-wrap{flex:1;overflow:hidden;display:flex;flex-direction:column}
         .chat-container{flex:1;overflow-y:auto;padding:24px}
         .message{margin-bottom:20px;display:flex;gap:12px;align-items:flex-start}
         .message.user{flex-direction:row-reverse}
@@ -48,31 +39,28 @@
         .msg-content{max-width:75%;padding:12px 16px;border-radius:12px;line-height:1.7;font-size:13.5px;white-space:pre-wrap}
         .message.assistant .msg-content{background:#1e293b;border:1px solid #334155}
         .message.user .msg-content{background:linear-gradient(135deg,#312e81,#581c87);color:#e0e7ff}
-        .input-area{padding:16px 24px;background:#111827;border-top:1px solid #1e293b}
+        .input-area{padding:16px 24px;background:#111827;border-top:1px solid #1e293b;flex-shrink:0}
         .input-row{display:flex;gap:10px;align-items:flex-end}
         .input-row textarea{flex:1;padding:12px 16px;border:1px solid #334155;border-radius:10px;font-size:14px;background:#0f172a;color:#e2e8f0;resize:none;outline:none;font-family:inherit;min-height:44px;max-height:120px;transition:border-color .2s}
         .input-row textarea:focus{border-color:#6366f1}
         .input-row textarea::placeholder{color:#475569}
         .send-btn{padding:12px 20px;background:#4f46e5;color:white;border:none;border-radius:10px;cursor:pointer;font-size:14px;transition:all .15s;flex-shrink:0}
-        .send-btn:hover{background:#4338ca}
-        .send-btn:disabled{opacity:.4;cursor:not-allowed}
+        .send-btn:hover{background:#4338ca}.send-btn:disabled{opacity:.4;cursor:not-allowed}
         .chat-actions{display:flex;gap:8px;margin-top:10px}
         .chat-actions button{padding:6px 12px;background:transparent;color:#64748b;border:1px solid #1e293b;border-radius:6px;cursor:pointer;font-size:12px;transition:all .15s}
         .chat-actions button:hover{background:#1e293b;color:#e2e8f0}
         .loading{display:inline-flex;gap:4px;padding:12px 16px}
         .loading span{width:7px;height:7px;background:#6366f1;border-radius:50%;animation:bounce 1.4s infinite ease-in-out both}
-        .loading span:nth-child(1){animation-delay:-.32s}
-        .loading span:nth-child(2){animation-delay:-.16s}
+        .loading span:nth-child(1){animation-delay:-.32s}.loading span:nth-child(2){animation-delay:-.16s}
         @keyframes bounce{0%,80%,100%{transform:scale(0)}40%{transform:scale(1)}}
 
-        /* ========== Memory Module ========== */
+        /* Memory */
         .mem-content{padding:24px}
         .mem-section{margin-bottom:24px}
-        .mem-section h3{font-size:14px;font-weight:500;color:#94a3b8;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+        .mem-section h3{font-size:14px;font-weight:500;color:#94a3b8;margin-bottom:12px}
         .mem-card{background:#1e293b;border:1px solid #334155;border-radius:10px;padding:14px 16px;margin-bottom:8px}
         .mem-card .date{font-size:11px;color:#6366f1;font-weight:500;margin-bottom:4px}
         .mem-card .text{font-size:13px;line-height:1.7;color:#cbd5e1;white-space:pre-wrap;max-height:200px;overflow-y:auto}
-        .mem-card .meta{font-size:11px;color:#475569;margin-top:6px}
         .mem-search{display:flex;gap:8px;margin-bottom:20px}
         .mem-search input{flex:1;padding:10px 14px;background:#0f172a;border:1px solid #334155;border-radius:8px;color:#e2e8f0;font-size:13px;outline:none}
         .mem-search input:focus{border-color:#6366f1}
@@ -81,32 +69,27 @@
         .mem-add-form textarea{width:100%;padding:10px 14px;background:#0f172a;border:1px solid #334155;border-radius:8px;color:#e2e8f0;font-size:13px;outline:none;resize:vertical;min-height:60px;font-family:inherit}
         .mem-add-form textarea:focus{border-color:#6366f1}
         .mem-add-form .form-row{display:flex;gap:8px;margin-top:8px;align-items:center}
-        .mem-add-form select{padding:8px 12px;background:#0f172a;border:1px solid #334155;border-radius:8px;color:#e2e8f0;font-size:13px;outline:none}
-        .mem-add-form .submit-btn{padding:8px 16px;background:#4f46e5;color:white;border:none;border-radius:8px;cursor:pointer;font-size:13px;margin-left:auto}
+        .mem-add-form select,.form-select{padding:8px 12px;background:#0f172a;border:1px solid #334155;border-radius:8px;color:#e2e8f0;font-size:13px;outline:none}
+        .submit-btn{padding:8px 16px;background:#4f46e5;color:white;border:none;border-radius:8px;cursor:pointer;font-size:13px;margin-left:auto}
         .search-result{background:#1e293b;border:1px solid #334155;border-radius:10px;padding:12px 16px;margin-bottom:6px}
         .search-result .file{font-size:11px;color:#6366f1;font-weight:500;margin-bottom:4px}
         .search-result .match{font-size:13px;color:#cbd5e1;padding:2px 0;border-bottom:1px solid #1e293b}
         .search-result .match:last-child{border-bottom:none}
-        .search-result .line-num{color:#475569;margin-right:8px;font-size:11px}
+        .search-result .ln{color:#475569;margin-right:8px;font-size:11px}
         .tag{display:inline-block;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:500}
-        .tag-success{background:#052e16;color:#4ade80}
-        .tag-failure{background:#450a0a;color:#f87171}
-        .tag-discovery{background:#0c1a3d;color:#60a5fa}
-        .tag-constraint{background:#1c1917;color:#fbbf24}
-        .tag-general{background:#1e293b;color:#94a3b8}
+        .tag-s{background:#052e16;color:#4ade80}.tag-f{background:#450a0a;color:#f87171}
+        .tag-d{background:#0c1a3d;color:#60a5fa}.tag-c{background:#1c1917;color:#fbbf24}
+        .tag-g{background:#1e293b;color:#94a3b8}
         .empty-state{text-align:center;padding:40px 20px;color:#475569}
         .empty-state .icon{font-size:32px;margin-bottom:12px}
         .empty-state p{font-size:13px}
 
-        /* ========== Growth Box Module ========== */
+        /* Growth Box */
         .gb-content{padding:24px}
         .gb-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:24px}
         .gb-stat{background:#1e293b;border:1px solid #334155;border-radius:10px;padding:14px 16px}
         .gb-stat .label{font-size:11px;color:#64748b;margin-bottom:4px}
         .gb-stat .value{font-size:22px;font-weight:600}
-        .gb-stat .value.danger{color:#f87171}
-        .gb-stat .value.warn{color:#fbbf24}
-        .gb-stat .value.ok{color:#4ade80}
         .gb-error-card{background:#1e293b;border:1px solid #334155;border-radius:10px;padding:14px 16px;margin-bottom:8px;display:flex;gap:12px;align-items:flex-start}
         .gb-error-card .count{font-size:18px;font-weight:600;color:#f87171;min-width:28px;text-align:center}
         .gb-error-card .info{flex:1}
@@ -120,475 +103,367 @@
         .gb-add-form input,.gb-add-form textarea{width:100%;padding:10px 14px;background:#0f172a;border:1px solid #334155;border-radius:8px;color:#e2e8f0;font-size:13px;outline:none;font-family:inherit;margin-bottom:8px}
         .gb-add-form textarea{resize:vertical;min-height:50px}
         .gb-add-form input:focus,.gb-add-form textarea:focus{border-color:#6366f1}
-        .gb-add-form .form-row{display:flex;gap:8px;align-items:center}
-        .gb-add-form select{padding:8px 12px;background:#0f172a;border:1px solid #334155;border-radius:8px;color:#e2e8f0;font-size:13px;outline:none}
-        .gb-add-form .submit-btn{padding:8px 16px;background:#4f46e5;color:white;border:none;border-radius:8px;cursor:pointer;font-size:13px;margin-left:auto}
 
-        /* ========== Dashboard Module ========== */
+        /* Dashboard */
         .dash-content{padding:24px}
         .dash-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;margin-bottom:24px}
         .dash-card{background:#1e293b;border:1px solid #334155;border-radius:12px;padding:18px 20px}
         .dash-card .label{font-size:12px;color:#64748b;margin-bottom:6px}
         .dash-card .value{font-size:24px;font-weight:600}
-        .dash-card .value.green{color:#4ade80}
-        .dash-card .value.red{color:#f87171}
-        .dash-card .value.blue{color:#60a5fa}
-        .dash-card .value.amber{color:#fbbf24}
+        .v-g{color:#4ade80}.v-r{color:#f87171}.v-b{color:#60a5fa}.v-a{color:#fbbf24}
         .dash-section{margin-bottom:24px}
         .dash-section h3{font-size:14px;font-weight:500;color:#94a3b8;margin-bottom:12px}
         .dash-row{display:flex;justify-content:space-between;align-items:center;padding:10px 14px;background:#1e293b;border:1px solid #334155;border-radius:8px;margin-bottom:6px}
-        .dash-row .label{font-size:13px;color:#cbd5e1}
-        .dash-row .value{font-size:13px;font-weight:500}
+        .dash-row .l{font-size:13px;color:#cbd5e1}
+        .dash-row .v{font-size:13px;font-weight:500}
 
-        /* Scrollbar */
-        ::-webkit-scrollbar{width:5px}
-        ::-webkit-scrollbar-track{background:transparent}
-        ::-webkit-scrollbar-thumb{background:#334155;border-radius:3px}
-
-        /* Responsive */
+        ::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:#334155;border-radius:3px}
         @media(max-width:640px){
-            .sidebar{width:56px}
-            .sidebar-brand h1,.sidebar-brand .sub,.nav-group-label,.nav-item span,.nav-badge{display:none}
-            .nav-item{justify-content:center;padding:12px}
-            .dash-grid{grid-template-columns:1fr}
-            .gb-stats{grid-template-columns:1fr}
+            .sidebar{width:56px}.sidebar-brand h1,.sidebar-brand .sub,.nav-group-label,.nav-item span{display:none}
+            .nav-item{justify-content:center;padding:12px}.dash-grid{grid-template-columns:1fr}.gb-stats{grid-template-columns:1fr}
         }
     </style>
 </head>
 <body>
     <div class="app">
         <nav class="sidebar">
-            <div class="sidebar-brand">
-                <h1>战略中枢</h1>
-                <div class="sub">Strategic Hub</div>
-            </div>
+            <div class="sidebar-brand"><h1>战略中枢</h1><div class="sub">Strategic Hub</div></div>
             <div class="nav-group">
                 <div class="nav-group-label">核心</div>
-                <div class="nav-item active" data-page="chat" onclick="switchPage('chat')">
-                    <span class="icon">&#x1F9E0;</span><span>战略顾问</span>
-                </div>
-                <div class="nav-item" data-page="memory" onclick="switchPage('memory')">
-                    <span class="icon">&#x1F4DD;</span><span>记忆中心</span>
-                </div>
-                <div class="nav-item" data-page="growthbox" onclick="switchPage('growthbox')">
-                    <span class="icon">&#x1F331;</span><span>成长箱</span>
-                </div>
+                <div class="nav-item active" data-page="chat" onclick="switchPage('chat')"><span class="icon">&#x1F9E0;</span><span>战略顾问</span></div>
+                <div class="nav-item" data-page="memory" onclick="switchPage('memory')"><span class="icon">&#x1F4DD;</span><span>记忆中心</span></div>
+                <div class="nav-item" data-page="growthbox" onclick="switchPage('growthbox')"><span class="icon">&#x1F331;</span><span>成长箱</span></div>
                 <div class="nav-group-label">系统</div>
-                <div class="nav-item" data-page="dashboard" onclick="switchPage('dashboard')">
-                    <span class="icon">&#x1F4CA;</span><span>总览面板</span>
-                </div>
+                <div class="nav-item" data-page="dashboard" onclick="switchPage('dashboard')"><span class="icon">&#x1F4CA;</span><span>总览面板</span></div>
             </div>
-            <div class="sidebar-status" id="sidebarStatus">
-                <span class="status-dot loading"></span>检查中...
-            </div>
+            <div class="sidebar-status" id="sidebarStatus"><span class="status-dot loading"></span>检查中...</div>
         </nav>
 
         <div class="main">
-            <!-- ===== CHAT PAGE ===== -->
             <div id="page-chat" class="page">
                 <div class="page-header"><h2>&#x1F9E0; 战略顾问</h2></div>
-                <div class="chat-container" id="chatContainer"></div>
-                <div class="input-area">
-                    <div class="input-row">
-                        <textarea id="userInput" placeholder="说说你的想法、项目、或者困扰你的问题..." rows="1" oninput="autoResize(this)" onkeypress="handleKeyPress(event)"></textarea>
-                        <button class="send-btn" id="sendBtn" onclick="sendMessage()">&#x27A4;</button>
-                    </div>
-                    <div class="chat-actions">
-                        <button onclick="clearChat()">&#x1F5D1; 清空对话</button>
+                <div class="chat-wrap">
+                    <div class="chat-container" id="chatContainer"></div>
+                    <div class="input-area">
+                        <div class="input-row">
+                            <textarea id="userInput" placeholder="说说你的想法、项目、或者困扰你的问题..." rows="1" oninput="this.style.height='auto';this.style.height=this.scrollHeight+'px'" onkeypress="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendMessage()}"></textarea>
+                            <button class="send-btn" id="sendBtn" onclick="sendMessage()">&#x27A4;</button>
+                        </div>
+                        <div class="chat-actions">
+                            <button onclick="clearChat()">&#x1F5D1; 清空对话</button>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <!-- ===== MEMORY PAGE ===== -->
             <div id="page-memory" class="page" style="display:none">
-                <div class="page-header">
-                    <h2>&#x1F4DD; 记忆中心</h2>
-                    <div style="display:flex;gap:8px">
-                        <button class="send-btn" style="padding:8px 14px;font-size:12px" onclick="refreshMemory()">&#x21BB; 刷新</button>
-                    </div>
-                </div>
+                <div class="page-header"><h2>&#x1F4DD; 记忆中心</h2><button class="send-btn" style="padding:8px 14px;font-size:12px" onclick="refreshMemory()">&#x21BB; 刷新</button></div>
                 <div class="page-body">
                     <div class="mem-content">
                         <div class="mem-add-form">
                             <textarea id="memInput" placeholder="记录一条新的工作记忆..."></textarea>
                             <div class="form-row">
-                                <select id="memCategory">
-                                    <option value="general">记录</option>
-                                    <option value="success">成功</option>
-                                    <option value="failure">失败</option>
-                                    <option value="discovery">发现</option>
-                                    <option value="constraint">约束</option>
-                                </select>
+                                <select id="memCat"><option value="general">记录</option><option value="success">成功</option><option value="failure">失败</option><option value="discovery">发现</option><option value="constraint">约束</option></select>
                                 <button class="submit-btn" onclick="addMemory()">&#x27A4; 添加</button>
                             </div>
                         </div>
                         <div class="mem-search">
-                            <input id="memSearchInput" placeholder="搜索记忆内容..." onkeypress="if(event.key==='Enter')searchMemory()">
+                            <input id="memQ" placeholder="搜索记忆内容..." onkeypress="if(event.key==='Enter')searchMemory()">
                             <button onclick="searchMemory()">&#x1F50D; 搜索</button>
                         </div>
-                        <div id="memSearchResults"></div>
-                        <div class="mem-section">
-                            <h3>&#x1F4C5; 近期日志</h3>
-                            <div id="memDailyList"></div>
-                        </div>
-                        <div class="mem-section">
-                            <h3>&#x1F9E0; 长期记忆 (MEMORY.md)</h3>
-                            <div id="memLongterm"></div>
-                        </div>
+                        <div id="memResults"></div>
+                        <div class="mem-section"><h3>&#x1F4C5; 工作日志</h3><div id="memList"></div></div>
                     </div>
                 </div>
             </div>
 
-            <!-- ===== GROWTH BOX PAGE ===== -->
             <div id="page-growthbox" class="page" style="display:none">
-                <div class="page-header">
-                    <h2>&#x1F331; 成长箱</h2>
-                    <div style="display:flex;gap:8px">
-                        <button class="send-btn" style="padding:8px 14px;font-size:12px" onclick="refreshGrowthBox()">&#x21BB; 刷新</button>
-                    </div>
-                </div>
+                <div class="page-header"><h2>&#x1F331; 成长箱</h2><button class="send-btn" style="padding:8px 14px;font-size:12px" onclick="refreshGB()">&#x21BB; 刷新</button></div>
                 <div class="page-body">
                     <div class="gb-content">
                         <div class="gb-add-form">
                             <input id="gbTitle" placeholder="错误标题（简短）">
                             <textarea id="gbDesc" placeholder="错误描述（发生了什么、怎么避免）"></textarea>
                             <div class="form-row">
-                                <select id="gbSeverity">
-                                    <option value="medium">中等</option>
-                                    <option value="low">轻微</option>
-                                    <option value="high">严重</option>
-                                </select>
-                                <select id="gbCategory">
-                                    <option value="general">通用</option>
-                                    <option value="code">代码</option>
-                                    <option value="deploy">部署</option>
-                                    <option value="api">API</option>
-                                    <option value="config">配置</option>
-                                </select>
-                                <button class="submit-btn" onclick="addGrowthError()">&#x27A4; 记录错误</button>
+                                <select id="gbSev"><option value="medium">中等</option><option value="low">轻微</option><option value="high">严重</option></select>
+                                <select id="gbCat"><option value="general">通用</option><option value="code">代码</option><option value="deploy">部署</option><option value="api">API</option><option value="config">配置</option></select>
+                                <button class="submit-btn" onclick="addGBError()">&#x27A4; 记录错误</button>
                             </div>
                         </div>
                         <div class="gb-stats" id="gbStats"></div>
-                        <div id="gbErrors"></div>
+                        <div id="gbList"></div>
                     </div>
                 </div>
             </div>
 
-            <!-- ===== DASHBOARD PAGE ===== -->
             <div id="page-dashboard" class="page" style="display:none">
-                <div class="page-header">
-                    <h2>&#x1F4CA; 总览面板</h2>
-                    <button class="send-btn" style="padding:8px 14px;font-size:12px" onclick="refreshDashboard()">&#x21BB; 刷新</button>
-                </div>
-                <div class="page-body">
-                    <div class="dash-content" id="dashContent"></div>
-                </div>
+                <div class="page-header"><h2>&#x1F4CA; 总览面板</h2><button class="send-btn" style="padding:8px 14px;font-size:12px" onclick="refreshDash()">&#x21BB; 刷新</button></div>
+                <div class="page-body"><div class="dash-content" id="dashContent"></div></div>
             </div>
         </div>
     </div>
 
-    <script>
-    const API_BASE = 'https://qa-project-backend.onrender.com';
+<script>
+const API = 'https://qa-project-backend.onrender.com';
+const LS = {
+    get(k, d) { try { return JSON.parse(localStorage.getItem('qa_'+k)) || d; } catch { return d; } },
+    set(k, v) { localStorage.setItem('qa_'+k, JSON.stringify(v)); }
+};
 
-    // ========== Page Navigation ==========
-    let currentPage = 'chat';
+// ========== Nav ==========
+function switchPage(p) {
+    document.querySelectorAll('.page').forEach(e=>e.style.display='none');
+    document.getElementById('page-'+p).style.display='flex';
+    document.querySelectorAll('.nav-item').forEach(n=>n.classList.toggle('active',n.dataset.page===p));
+    if(p==='memory') refreshMemory();
+    else if(p==='growthbox') refreshGB();
+    else if(p==='dashboard') refreshDash();
+}
 
-    function switchPage(page) {
-        currentPage = page;
-        document.querySelectorAll('.page').forEach(p => p.style.display = 'none');
-        document.getElementById('page-' + page).style.display = 'flex';
-        document.querySelectorAll('.nav-item').forEach(n => n.classList.toggle('active', n.dataset.page === page));
-        // Load page data
-        if (page === 'memory') refreshMemory();
-        else if (page === 'growthbox') refreshGrowthBox();
-        else if (page === 'dashboard') refreshDashboard();
+// ========== Health ==========
+async function health() {
+    try {
+        const r = await fetch(API+'/health', {signal:AbortSignal.timeout(8000)});
+        if(!r.ok) throw new Error(r.status);
+        return await r.json();
+    } catch(e) { return {status:'error',detail:e.message}; }
+}
+
+(async()=>{
+    const h = await health();
+    document.getElementById('sidebarStatus').innerHTML = h.status==='healthy'
+        ? `<span class="status-dot ok"></span>${h.ai_model||'AI'} 就绪`
+        : `<span class="status-dot err"></span>离线`;
+    setInterval(async()=>{
+        const h2=await health();
+        document.getElementById('sidebarStatus').innerHTML = h2.status==='healthy'
+            ? `<span class="status-dot ok"></span>${h2.ai_model||'AI'} 就绪`
+            : `<span class="status-dot err"></span>离线`;
+    },60000);
+})();
+
+// ========== Chat ==========
+let history = [];
+const INIT = `老大好！我是你的战略顾问。\n\n别把我当工具人，咱俩是搭档。\n\n你现在脑子里有什么？\n- 有个项目想法但没理清楚？\n- 遇到瓶颈不知道怎么突破？\n- 想制定一个行动计划但缺思路？\n\n说出来，越详细越好。我来帮你理得明明白白。`;
+
+addMsg('assistant', INIT);
+document.getElementById('userInput').focus();
+
+function addMsg(role, text) {
+    const c = document.getElementById('chatContainer');
+    const d = document.createElement('div');
+    d.className = 'message '+role;
+    d.innerHTML = `<div class="avatar">${role==='user'?'&#x1F464;':'&#x1F9E0;'}</div><div class="msg-content">${esc(text)}</div>`;
+    c.appendChild(d); c.scrollTop = c.scrollHeight;
+    history.push({role,content:text});
+}
+
+function addLoad() {
+    const c=document.getElementById('chatContainer');
+    const d=document.createElement('div');
+    d.className='message assistant';d.id='ld';
+    d.innerHTML=`<div class="avatar">&#x1F9E0;</div><div class="loading"><span></span><span></span><span></span></div>`;
+    c.appendChild(d);c.scrollTop=c.scrollHeight;
+}
+function rmLoad(){const e=document.getElementById('ld');if(e)e.remove();}
+
+async function sendMessage(){
+    const msg=document.getElementById('userInput').value.trim();
+    if(!msg) return;
+    addMsg('user',msg);
+    document.getElementById('userInput').value='';
+    document.getElementById('userInput').style.height='auto';
+    document.getElementById('sendBtn').disabled=true;
+    addLoad();
+    try{
+        const h=await health();
+        if(h.status!=='healthy') throw new Error(h.detail||'后端不可用');
+        const r=await fetch(API+'/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:msg,history:history.slice(0,-1)})});
+        rmLoad();
+        if(!r.ok){const e=await r.json().catch(()=>({}));throw new Error(e.detail||'HTTP '+r.status);}
+        const data=await r.json();
+        addMsg('assistant',data.answer);
+    }catch(e){
+        rmLoad();
+        const hint=e.message.includes('Failed to fetch')?'网络不通，刷新重试':e.message.includes('timeout')?'超时，等30秒再试':e.message;
+        addMsg('assistant','错误：'+hint);
+    }finally{document.getElementById('sendBtn').disabled=false;document.getElementById('userInput').focus();}
+}
+
+function clearChat(){document.getElementById('chatContainer').innerHTML='';history=[];addMsg('assistant',INIT);}
+
+// ========== Memory (localStorage) ==========
+function getEntries() { return LS.get('mem',[]); }
+function saveEntries(e) { LS.set('mem',e); }
+
+const catMap = {general:'记录',success:'成功',failure:'失败',discovery:'发现',constraint:'约束'};
+const catTag = {general:'tag-g',success:'tag-s',failure:'tag-f',discovery:'tag-d',constraint:'tag-c'};
+
+function addMemory(){
+    const content=document.getElementById('memInput').value.trim();
+    if(!content) return;
+    const cat=document.getElementById('memCat').value;
+    const entries=getEntries();
+    entries.push({id:Date.now(),date:new Date().toISOString(),content,category:cat});
+    saveEntries(entries);
+    document.getElementById('memInput').value='';
+    refreshMemory();
+}
+
+function refreshMemory(){
+    const entries=getEntries();
+    const listEl=document.getElementById('memList');
+    // Group by date
+    const byDate={};
+    entries.forEach(e=>{
+        const d=e.date.split('T')[0];
+        if(!byDate[d]) byDate[d]=[];
+        byDate[d].push(e);
+    });
+    const dates=Object.keys(byDate).sort().reverse().slice(0,7);
+    if(dates.length===0){
+        listEl.innerHTML='<div class="empty-state"><div class="icon">&#x1F4ED;</div><p>暂无记忆记录</p></div>';
+    }else{
+        listEl.innerHTML=dates.map(d=>{
+            const items=byDate[d].sort((a,b)=>b.id-a.id);
+            return `<div class="mem-card"><div class="date">${d}${d===new Date().toISOString().split('T')[0]?' (今天)':''} &mdash; ${items.length} 条</div>${items.map(i=>`<div style="margin:4px 0;padding:6px 8px;background:#0f172a;border-radius:6px"><span class="tag ${catTag[i.category]||'tag-g'}">${catMap[i.category]||i.category}</span> <span style="font-size:12px;color:#64748b">${new Date(i.date).toLocaleTimeString('zh-CN',{hour:'2-digit',minute:'2-digit'})}</span><div style="font-size:13px;margin-top:4px;color:#cbd5e1">${esc(i.content)}</div></div>`).join('')}</div>`;
+        }).join('');
     }
+    document.getElementById('memResults').innerHTML='';
+}
 
-    // ========== Health Check ==========
-    async function checkBackend() {
-        try {
-            const resp = await fetch(`${API_BASE}/health`, { signal: AbortSignal.timeout(8000) });
-            if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
-            return await resp.json();
-        } catch (e) {
-            return { status: 'error', detail: e.message };
-        }
+function searchMemory(){
+    const q=document.getElementById('memQ').value.trim().toLowerCase();
+    if(!q) return;
+    const entries=getEntries();
+    const matches=entries.filter(e=>e.content.toLowerCase().includes(q));
+    const el=document.getElementById('memResults');
+    if(matches.length===0){
+        el.innerHTML='<div class="empty-state" style="margin-bottom:16px"><p>未找到匹配</p></div>';
+    }else{
+        el.innerHTML=`<div style="font-size:12px;color:#64748b;margin-bottom:8px">找到 ${matches.length} 条</div>`+
+            matches.map(m=>`<div class="search-result"><div class="file">${m.date.split('T')[0]} <span class="tag ${catTag[m.category]||'tag-g'}">${catMap[m.category]||m.category}</span></div><div class="match">${esc(m.content)}</div></div>`).join('');
     }
+}
 
-    function updateSidebarStatus(info) {
-        const el = document.getElementById('sidebarStatus');
-        if (info.status === 'healthy') {
-            el.innerHTML = `<span class="status-dot ok"></span>${info.ai_model || 'AI'} 就绪`;
-        } else {
-            el.innerHTML = `<span class="status-dot err"></span>后端离线`;
-        }
+function deleteEntry(id){
+    let entries=getEntries();
+    entries=entries.filter(e=>e.id!==id);
+    saveEntries(entries);
+    refreshMemory();
+}
+
+// ========== Growth Box (localStorage) ==========
+function getGB() { return LS.get('gb',[]); }
+function saveGB(e) { LS.set('gb',e); }
+
+function addGBError(){
+    const title=document.getElementById('gbTitle').value.trim();
+    const desc=document.getElementById('gbDesc').value.trim();
+    if(!title) return;
+    const sev=document.getElementById('gbSev').value;
+    const cat=document.getElementById('gbCat').value;
+    const errors=getGB();
+    const existing=errors.find(e=>e.title===title);
+    if(existing){
+        existing.count=(existing.count||1)+1;
+        existing.lastSeen=new Date().toISOString();
+    }else{
+        errors.push({id:'e'+Date.now(),title,description:desc,severity:sev,category:cat,count:1,firstSeen:new Date().toISOString(),lastSeen:new Date().toISOString(),promoted:false});
     }
+    saveGB(errors);
+    document.getElementById('gbTitle').value='';
+    document.getElementById('gbDesc').value='';
+    refreshGB();
+}
 
-    (async () => {
-        const info = await checkBackend();
-        updateSidebarStatus(info);
-        if (info.status !== 'healthy') {
-            addMessage('assistant', `后端当前不可用：${info.detail || '未知错误'}\n\n刷新页面试试。`);
-        }
-        // Update dashboard if on that page
-        setInterval(async () => {
-            const h = await checkBackend();
-            updateSidebarStatus(h);
-        }, 60000);
-    })();
+function promoteError(id){
+    const errors=getGB();
+    const target=errors.find(e=>e.id===id);
+    if(!target) return;
+    target.promoted=true;
+    target.promotedAt=new Date().toISOString();
+    saveGB(errors);
+    refreshGB();
+}
 
-    // ========== Chat Module ==========
-    let conversationHistory = [];
-    const INITIAL_MESSAGE = `老大好！我是你的战略顾问。
+function deleteGBError(id){
+    let errors=getGB();
+    errors=errors.filter(e=>e.id!==id);
+    saveGB(errors);
+    refreshGB();
+}
 
-别把我当工具人，咱俩是搭档。
+function refreshGB(){
+    const errors=getGB();
+    const total=errors.length;
+    const promoted=errors.filter(e=>e.promoted).length;
+    const eligible=errors.filter(e=>e.count>=3&&!e.promoted);
+    const high=errors.filter(e=>e.severity==='high').length;
 
-你现在脑子里有什么？
-- 有个项目想法但没理清楚？
-- 遇到瓶颈不知道怎么突破？
-- 想制定一个行动计划但缺思路？
+    document.getElementById('gbStats').innerHTML=`
+        <div class="gb-stat"><div class="label">总错误数</div><div class="value ${total>0?'v-a':'v-g'}">${total}</div></div>
+        <div class="gb-stat"><div class="label">已晋升规则</div><div class="value v-g">${promoted}</div></div>
+        <div class="gb-stat"><div class="label">待晋升</div><div class="value ${eligible.length>0?'v-r':'v-g'}">${eligible.length}</div></div>`;
 
-说出来，越详细越好。我来帮你理得明明白白。`;
-
-    addMessage('assistant', INITIAL_MESSAGE);
-    document.getElementById('userInput').focus();
-
-    function autoResize(el) { el.style.height = 'auto'; el.style.height = el.scrollHeight + 'px'; }
-    function handleKeyPress(e) { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); } }
-
-    function addMessage(role, content) {
-        const c = document.getElementById('chatContainer');
-        const d = document.createElement('div');
-        d.className = `message ${role}`;
-        d.innerHTML = `<div class="avatar">${role === 'user' ? '&#x1F464;' : '&#x1F9E0;'}</div><div class="msg-content">${escapeHtml(content)}</div>`;
-        c.appendChild(d);
-        c.scrollTop = c.scrollHeight;
-        conversationHistory.push({ role, content });
-    }
-
-    function addLoading() {
-        const c = document.getElementById('chatContainer');
-        const d = document.createElement('div');
-        d.className = 'message assistant'; d.id = 'loadingMsg';
-        d.innerHTML = `<div class="avatar">&#x1F9E0;</div><div class="loading"><span></span><span></span><span></span></div>`;
-        c.appendChild(d); c.scrollTop = c.scrollHeight;
-    }
-    function removeLoading() { const el = document.getElementById('loadingMsg'); if (el) el.remove(); }
-
-    async function sendMessage() {
-        const msg = document.getElementById('userInput').value.trim();
-        if (!msg) return;
-        addMessage('user', msg);
-        document.getElementById('userInput').value = '';
-        document.getElementById('userInput').style.height = 'auto';
-        document.getElementById('sendBtn').disabled = true;
-        addLoading();
-        try {
-            const h = await checkBackend();
-            if (h.status !== 'healthy') throw new Error(h.detail || '后端不可用');
-            const r = await fetch(`${API_BASE}/chat`, {
-                method: 'POST', headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ message: msg, history: conversationHistory.slice(0, -1) })
-            });
-            removeLoading();
-            if (!r.ok) { const e = await r.json().catch(() => ({})); throw new Error(e.detail || `HTTP ${r.status}`); }
-            const data = await r.json();
-            addMessage('assistant', data.answer);
-        } catch (e) {
-            removeLoading();
-            const hint = e.message.includes('Failed to fetch') ? '网络不通，刷新重试' : e.message.includes('timeout') ? '请求超时，等 30 秒再试' : e.message;
-            addMessage('assistant', `错误：${hint}`);
-        } finally {
-            document.getElementById('sendBtn').disabled = false;
-            document.getElementById('userInput').focus();
-        }
-    }
-
-    function clearChat() {
-        document.getElementById('chatContainer').innerHTML = '';
-        conversationHistory = [];
-        addMessage('assistant', INITIAL_MESSAGE);
-    }
-
-    // ========== Memory Module ==========
-    async function refreshMemory() {
-        const [dailyRes, longRes] = await Promise.all([
-            apiFetch('/api/memory/daily/list?days=7'),
-            apiFetch('/api/memory/longterm')
-        ]);
-        // Daily list
-        const listEl = document.getElementById('memDailyList');
-        if (!dailyRes || dailyRes.length === 0) {
-            listEl.innerHTML = '<div class="empty-state"><div class="icon">&#x1F4ED;</div><p>近 7 天暂无日志</p></div>';
-        } else {
-            listEl.innerHTML = dailyRes.map(d => `
-                <div class="mem-card">
-                    <div class="date">${d.date}${d.date === new Date().toISOString().split('T')[0] ? ' (今天)' : ''}</div>
-                    <div class="text">${escapeHtml(d.preview || '（空）')}</div>
-                    <div class="meta">${d.size} 字符</div>
+    const el=document.getElementById('gbList');
+    if(errors.length===0){
+        el.innerHTML='<div class="empty-state"><div class="icon">&#x1F389;</div><p>成长箱空空如也，继续保持！</p></div>';
+    }else{
+        el.innerHTML=errors.sort((a,b)=>b.count-a.count).map(e=>`
+            <div class="gb-error-card ${e.count>=3&&!e.promoted?'promotable':''}">
+                <div class="count">${e.count}x</div>
+                <div class="info">
+                    <div class="title">${esc(e.title)} ${e.promoted?'<span class="tag tag-s">已晋升</span>':''} ${e.severity==='high'?'<span class="tag tag-f">严重</span>':''}</div>
+                    <div class="desc">${esc(e.description||'')}</div>
+                    <div class="meta">${e.severity} / ${e.category} / ${e.lastSeen.split('T')[0]}</div>
                 </div>
-            `).join('');
-        }
-        // Longterm
-        const ltEl = document.getElementById('memLongterm');
-        if (!longRes || !longRes.exists) {
-            ltEl.innerHTML = '<div class="empty-state"><div class="icon">&#x1F4ED;</div><p>暂无长期记忆</p></div>';
-        } else {
-            ltEl.innerHTML = `<div class="mem-card"><div class="text" style="max-height:400px">${escapeHtml(longRes.content)}</div></div>`;
-        }
-    }
-
-    async function addMemory() {
-        const content = document.getElementById('memInput').value.trim();
-        const category = document.getElementById('memCategory').value;
-        if (!content) return;
-        const res = await apiFetch('/api/memory/daily', {
-            method: 'POST', headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ content, category })
-        });
-        if (res && res.status === 'ok') {
-            document.getElementById('memInput').value = '';
-            refreshMemory();
-        }
-    }
-
-    async function searchMemory() {
-        const q = document.getElementById('memSearchInput').value.trim();
-        if (!q) return;
-        const res = await apiFetch(`/api/memory/search?query=${encodeURIComponent(q)}`);
-        const el = document.getElementById('memSearchResults');
-        if (!res || res.results.length === 0) {
-            el.innerHTML = '<div class="empty-state" style="margin-bottom:16px"><p>未找到匹配内容</p></div>';
-        } else {
-            el.innerHTML = res.results.map(f => `
-                <div class="search-result">
-                    <div class="file">${f.file} (${f.matches.length} 条匹配)</div>
-                    ${f.matches.map(m => `<div class="match"><span class="line-num">L${m.line}</span>${escapeHtml(m.text)}</div>`).join('')}
+                <div style="display:flex;flex-direction:column;gap:4px">
+                    ${e.count>=3&&!e.promoted?`<button class="promote-btn" onclick="promoteError('${e.id}')">&#x2B06; 晋升</button>`:''}
+                    <button style="padding:4px 8px;background:transparent;color:#475569;border:1px solid #334155;border-radius:4px;cursor:pointer;font-size:11px" onclick="deleteGBError('${e.id}')">&#x2716;</button>
                 </div>
-            `).join('') + `<div style="text-align:center;font-size:12px;color:#475569;margin:8px">共 ${res.total_files} 个文件匹配</div>`;
-        }
+            </div>`).join('');
     }
+}
 
-    // ========== Growth Box Module ==========
-    async function refreshGrowthBox() {
-        const res = await apiFetch('/api/growthbox/errors');
-        if (!res) return;
+// ========== Dashboard ==========
+async function refreshDash(){
+    const aiInfo = await health();
+    const entries=getEntries();
+    const errors=getGB();
+    const today=new Date().toISOString().split('T')[0];
+    const todayEntries=entries.filter(e=>e.date&&e.date.startsWith(today));
+    const days7=new Date(Date.now()-7*86400000).toISOString().split('T')[0];
+    const recentEntries=entries.filter(e=>e.date&&e.date.split('T')[0]>=days7);
+    const recentDays=new Set(recentEntries.map(e=>e.date.split('T')[0])).size;
 
-        // Stats
-        document.getElementById('gbStats').innerHTML = `
-            <div class="gb-stat"><div class="label">总错误数</div><div class="value ${res.total > 0 ? 'amber' : 'ok'}">${res.total}</div></div>
-            <div class="gb-stat"><div class="label">已晋升规则</div><div class="value ok">${res.promoted_to_rules !== undefined ? Object.values(res.summary).reduce((a,b)=>a+b,0) - res.eligible_for_promotion.length - (res.promoted_to_rules||0) : 0}</div></div>
-            <div class="gb-stat"><div class="label">待晋升</div><div class="value ${res.eligible_for_promotion.length > 0 ? 'danger' : 'ok'}">${res.eligible_for_promotion.length}</div></div>
-        `;
+    document.getElementById('dashContent').innerHTML=`
+        <div class="dash-grid">
+            <div class="dash-card"><div class="label">AI 模型</div><div class="value v-b">${aiInfo.ai_model||'未知'}</div></div>
+            <div class="dash-card"><div class="label">近 7 天记录</div><div class="value ${recentDays>0?'v-g':'v-r'}">${recentDays} 天 / ${recentEntries.length} 条</div></div>
+            <div class="dash-card"><div class="label">成长箱错误</div><div class="value ${errors.length>0?'v-a':'v-g'}">${errors.length}</div></div>
+            <div class="dash-card"><div class="label">今日已记录</div><div class="value ${todayEntries.length>0?'v-g':'v-r'}">${todayEntries.length} 条</div></div>
+        </div>
+        <div class="dash-section"><h3>AI 配置</h3>
+            <div class="dash-row"><span class="l">API Base</span><span class="v">${aiInfo.ai_base||'-'}</span></div>
+            <div class="dash-row"><span class="l">Model</span><span class="v">${aiInfo.ai_model||'-'}</span></div>
+            <div class="dash-row"><span class="l">API Key</span><span class="v" style="color:${aiInfo.ai_key_configured?'#4ade80':'#f87171'}">${aiInfo.ai_key_configured?'已配置':'未配置'}</span></div>
+        </div>
+        <div class="dash-section"><h3>记忆统计</h3>
+            <div class="dash-row"><span class="l">总记录数</span><span class="v">${entries.length}</span></div>
+            <div class="dash-row"><span class="l">近 7 天活跃</span><span class="v">${recentDays} 天</span></div>
+            <div class="dash-row"><span class="l">今日记录</span><span class="v" style="color:${todayEntries.length>0?'#4ade80':'#f87171'}">${todayEntries.length} 条</span></div>
+            <div class="dash-row"><span class="l">分类分布</span><span class="v">${Object.entries(entries.reduce((a,e)=>{a[e.category]=(a[e.category]||0)+1;return a;},{})).map(([k,v])=>`${catMap[k]||k}:${v}`).join(' / ')||'-'}</span></div>
+        </div>
+        <div class="dash-section"><h3>成长箱</h3>
+            <div class="dash-row"><span class="l">总错误</span><span class="v">${errors.length}</span></div>
+            <div class="dash-row"><span class="l">已晋升</span><span class="v">${errors.filter(e=>e.promoted).length}</span></div>
+            <div class="dash-row"><span class="l">待晋升 (count>=3)</span><span class="v" style="color:${errors.filter(e=>e.count>=3&&!e.promoted).length>0?'#f87171':'#4ade80'}">${errors.filter(e=>e.count>=3&&!e.promoted).length}</span></div>
+        </div>`;
+}
 
-        // Errors
-        const el = document.getElementById('gbErrors');
-        const errors = res.errors || [];
-        if (errors.length === 0) {
-            el.innerHTML = '<div class="empty-state"><div class="icon">&#x1F389;</div><p>成长箱空空如也，继续保持！</p></div>';
-        } else {
-            el.innerHTML = errors.map(e => `
-                <div class="gb-error-card ${e.count >= 3 && !e.promoted ? 'promotable' : ''}">
-                    <div class="count">${e.count}x</div>
-                    <div class="info">
-                        <div class="title">${escapeHtml(e.title)} ${e.promoted ? '<span class="tag tag-success">已晋升</span>' : ''}</div>
-                        <div class="desc">${escapeHtml(e.description)}</div>
-                        <div class="meta">${e.severity} / ${e.category} / 上次: ${e.last_seen ? e.last_seen.split('T')[0] : '-'}</div>
-                    </div>
-                    ${e.count >= 3 && !e.promoted ? `<button class="promote-btn" onclick="promoteError('${e.id}')">&#x2B06; 晋升</button>` : ''}
-                </div>
-            `).join('');
-        }
-    }
-
-    async function addGrowthError() {
-        const title = document.getElementById('gbTitle').value.trim();
-        const description = document.getElementById('gbDesc').value.trim();
-        const severity = document.getElementById('gbSeverity').value;
-        const category = document.getElementById('gbCategory').value;
-        if (!title) return;
-        const id = 'err-' + Date.now();
-        const res = await apiFetch('/api/growthbox/errors', {
-            method: 'POST', headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ error_id: id, title, description, severity, category })
-        });
-        if (res && res.status === 'ok') {
-            document.getElementById('gbTitle').value = '';
-            document.getElementById('gbDesc').value = '';
-            refreshGrowthBox();
-        }
-    }
-
-    async function promoteError(errorId) {
-        const res = await apiFetch('/api/growthbox/promote?error_id=' + encodeURIComponent(errorId), { method: 'POST' });
-        if (res && res.status === 'ok') {
-            refreshGrowthBox();
-        }
-    }
-
-    // ========== Dashboard Module ==========
-    async function refreshDashboard() {
-        const res = await apiFetch('/api/system/status');
-        if (!res) return;
-        const el = document.getElementById('dashContent');
-        el.innerHTML = `
-            <div class="dash-grid">
-                <div class="dash-card">
-                    <div class="label">AI 模型</div>
-                    <div class="value blue">${res.ai.model}</div>
-                </div>
-                <div class="dash-card">
-                    <div class="label">近 7 天日志</div>
-                    <div class="value ${res.memory.recent_7_days > 0 ? 'green' : 'red'}">${res.memory.recent_7_days} 天</div>
-                </div>
-                <div class="dash-card">
-                    <div class="label">成长箱错误</div>
-                    <div class="value ${res.growth_box.total_errors > 0 ? 'amber' : 'green'}">${res.growth_box.total_errors}</div>
-                </div>
-                <div class="dash-card">
-                    <div class="label">今日已记录</div>
-                    <div class="value ${res.today_has_record ? 'green' : 'red'}">${res.today_has_record ? '是' : '否'}</div>
-                </div>
-            </div>
-            <div class="dash-section">
-                <h3>AI 配置</h3>
-                <div class="dash-row"><span class="label">API Base</span><span class="value">${res.ai.api_base}</span></div>
-                <div class="dash-row"><span class="label">Model</span><span class="value">${res.ai.model}</span></div>
-                <div class="dash-row"><span class="label">API Key</span><span class="value" style="color:${res.ai.key_configured ? '#4ade80' : '#f87171'}">${res.ai.key_configured ? '已配置' : '未配置'}</span></div>
-            </div>
-            <div class="dash-section">
-                <h3>记忆系统</h3>
-                <div class="dash-row"><span class="label">日志文件总数</span><span class="value">${res.memory.total_daily_files}</span></div>
-                <div class="dash-row"><span class="label">近 7 天记录</span><span class="value">${res.memory.recent_7_days} 天</span></div>
-                <div class="dash-row"><span class="label">长期记忆 (MEMORY.md)</span><span class="value">${res.memory.longterm_exists ? res.memory.longterm_lines + ' 行' : '不存在'}</span></div>
-                <div class="dash-row"><span class="label">今日已记录</span><span class="value" style="color:${res.today_has_record ? '#4ade80' : '#f87171'}">${res.today_has_record ? '是' : '否'}</span></div>
-            </div>
-            <div class="dash-section">
-                <h3>成长箱</h3>
-                <div class="dash-row"><span class="label">总错误数</span><span class="value">${res.growth_box.total_errors}</span></div>
-                <div class="dash-row"><span class="label">已晋升为规则</span><span class="value">${res.growth_box.promoted_to_rules}</span></div>
-                <div class="dash-row"><span class="label">高严重度</span><span class="value" style="color:${res.growth_box.high_severity > 0 ? '#f87171' : '#4ade80'}">${res.growth_box.high_severity}</span></div>
-            </div>
-        `;
-    }
-
-    // ========== Utils ==========
-    async function apiFetch(path, options = {}) {
-        try {
-            const resp = await fetch(`${API_BASE}${path}`, { ...options, signal: AbortSignal.timeout(10000) });
-            if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
-            return await resp.json();
-        } catch (e) {
-            console.error('API error:', path, e);
-            return null;
-        }
-    }
-
-    function escapeHtml(text) {
-        const d = document.createElement('div');
-        d.textContent = text;
-        return d.innerHTML;
-    }
-    </script>
+// ========== Utils ==========
+function esc(t){const d=document.createElement('div');d.textContent=t;return d.innerHTML;}
+</script>
 </body>
 </html>
