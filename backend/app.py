@@ -3,10 +3,14 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import List, Dict
 import os
+import traceback
 import httpx
 from dotenv import load_dotenv
 
 load_dotenv()
+
+DEFAULT_AI_API_BASE = "https://api.iamhc.cn/v1"
+STALE_API_HOSTS = ("52mx.net",)
 
 STRATEGIC_ADVISOR_PROMPT = """你现在是用户的专属战略顾问，不是被动回答问题的工具人。
 
@@ -80,41 +84,72 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+
+def get_ai_config():
+    api_base = os.getenv("AI_API_BASE", DEFAULT_AI_API_BASE).strip().rstrip("/")
+    if not api_base or any(host in api_base for host in STALE_API_HOSTS):
+        api_base = DEFAULT_AI_API_BASE
+
+    api_key = os.getenv("AI_API_KEY", "").strip()
+    model = os.getenv("AI_MODEL", "auto").strip() or "auto"
+    return api_base, api_key, model
+
+
 @app.get("/health")
 def health():
-    return {"status": "healthy"}
+    api_base, api_key, model = get_ai_config()
+    return {
+        "status": "healthy",
+        "ai_base": api_base,
+        "ai_model": model,
+        "ai_key_configured": bool(api_key),
+    }
+
 
 @app.post("/chat")
 async def chat(req: ChatRequest):
+    api_base, api_key, model = get_ai_config()
+
+    if not api_key:
+        return {
+            "answer": "Error: AI_API_KEY is not configured on the backend. Please set it in Render Environment."
+        }
+
     messages = [{"role": "system", "content": STRATEGIC_ADVISOR_PROMPT}]
 
-    # 加入历史对话
     for h in req.history:
         role = h.get("role", "user")
         content = h.get("content", "")
         if content and role in ("user", "assistant"):
             messages.append({"role": role, "content": content})
 
-    # 添加当前用户消息
     messages.append({"role": "user", "content": req.message})
 
     async with httpx.AsyncClient(timeout=120.0) as client:
         try:
             resp = await client.post(
-                f"{os.getenv('AI_API_BASE')}/chat/completions",
+                f"{api_base}/chat/completions",
                 headers={
-                    "Authorization": f"Bearer {os.getenv('AI_API_KEY')}",
+                    "Authorization": f"Bearer {api_key}",
                     "Content-Type": "application/json",
                 },
                 json={
-                    "model": os.getenv("AI_MODEL", "auto"),
+                    "model": model,
                     "messages": messages,
                     "temperature": 0.8,
                 },
             )
+
+            if resp.status_code == 401:
+                return {
+                    "answer": f"Error: AI API 401 Unauthorized. Please check Render AI_API_KEY. Current api_base={api_base}, model={model}."
+                }
+
             resp.raise_for_status()
-            data = await resp.json()
+            data = resp.json()
             answer = data["choices"][0]["message"]["content"]
             return {"answer": answer}
         except Exception as e:
+            error_detail = traceback.format_exc()
+            print(f"Error in /chat: {error_detail}")
             return {"answer": f"Error: {str(e)}"}
