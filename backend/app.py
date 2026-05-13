@@ -10,7 +10,9 @@ from dotenv import load_dotenv
 load_dotenv()
 
 DEFAULT_AI_API_BASE = "https://api.iamhc.cn/v1"
+DEFAULT_AI_MODEL = "auto"
 STALE_API_HOSTS = ("52mx.net",)
+INVALID_MODELS = ("gpt-5.5", "codex")
 
 STRATEGIC_ADVISOR_PROMPT = """你现在是用户的专属战略顾问，不是被动回答问题的工具人。
 
@@ -91,7 +93,9 @@ def get_ai_config():
         api_base = DEFAULT_AI_API_BASE
 
     api_key = os.getenv("AI_API_KEY", "").strip()
-    model = os.getenv("AI_MODEL", "auto").strip() or "auto"
+    model = os.getenv("AI_MODEL", DEFAULT_AI_MODEL).strip() or DEFAULT_AI_MODEL
+    if any(invalid in model.lower() for invalid in INVALID_MODELS):
+        model = DEFAULT_AI_MODEL
     return api_base, api_key, model
 
 
@@ -125,7 +129,7 @@ async def chat(req: ChatRequest):
 
     messages.append({"role": "user", "content": req.message})
 
-    async with httpx.AsyncClient(timeout=120.0) as client:
+    async with httpx.AsyncClient(timeout=45.0) as client:
         try:
             resp = await client.post(
                 f"{api_base}/chat/completions",
@@ -149,6 +153,10 @@ async def chat(req: ChatRequest):
             data = resp.json()
             answer = data["choices"][0]["message"]["content"]
             return {"answer": answer}
+        except httpx.TimeoutException:
+            return {
+                "answer": f"Error: AI API request timed out. Current api_base={api_base}, model={model}. Please check whether the upstream API key/model is valid."
+            }
         except Exception as e:
             error_detail = traceback.format_exc()
             print(f"Error in /chat: {error_detail}")
