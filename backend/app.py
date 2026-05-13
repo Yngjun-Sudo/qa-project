@@ -94,7 +94,7 @@ def get_ai_config():
 
     api_key = os.getenv("AI_API_KEY", "").strip()
     model = os.getenv("AI_MODEL", DEFAULT_AI_MODEL).strip() or DEFAULT_AI_MODEL
-    if any(invalid in model.lower() for invalid in INVALID_MODELS):
+    if model.lower() == "auto" or any(invalid in model.lower() for invalid in INVALID_MODELS):
         model = DEFAULT_AI_MODEL
     return api_base, api_key, model
 
