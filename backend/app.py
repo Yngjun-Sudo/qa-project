@@ -444,6 +444,11 @@ async def chat(req: ChatRequest):
 
     messages.append({"role": "user", "content": req.message})
 
+    # Ensure messages start with user (remove leading assistant messages for Anthropic)
+    if is_anthropic_api(api_base):
+        while messages and messages[0].get("role") == "assistant":
+            messages.pop(0)
+
     async with httpx.AsyncClient(timeout=45.0) as client:
         try:
             if is_anthropic_api(api_base):

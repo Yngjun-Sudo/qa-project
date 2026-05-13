@@ -106,7 +106,7 @@
 
         /* Dashboard */
         .dash-content{padding:24px}
-        .dash-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;margin-bottom:24px}
+        .dash-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:24px}
         .dash-card{background:#1e293b;border:1px solid #334155;border-radius:12px;padding:18px 20px}
         .dash-card .label{font-size:12px;color:#64748b;margin-bottom:6px}
         .dash-card .value{font-size:24px;font-weight:600}
@@ -232,30 +232,45 @@ async function health() {
 (async()=>{
     const h = await health();
     document.getElementById('sidebarStatus').innerHTML = h.status==='healthy'
-        ? `<span class="status-dot ok"></span>${h.ai_model||'AI'} 就绪`
+        ? `<span class="status-dot ok"></span>服务就绪`
         : `<span class="status-dot err"></span>离线`;
     setInterval(async()=>{
         const h2=await health();
         document.getElementById('sidebarStatus').innerHTML = h2.status==='healthy'
-            ? `<span class="status-dot ok"></span>${h2.ai_model||'AI'} 就绪`
+            ? `<span class="status-dot ok"></span>服务就绪`
             : `<span class="status-dot err"></span>离线`;
     },60000);
 })();
 
 // ========== Chat ==========
-let history = [];
+let history = LS.get('chat_history', []);
 const INIT = `老大好！我是你的战略顾问。\n\n别把我当工具人，咱俩是搭档。\n\n你现在脑子里有什么？\n- 有个项目想法但没理清楚？\n- 遇到瓶颈不知道怎么突破？\n- 想制定一个行动计划但缺思路？\n\n说出来，越详细越好。我来帮你理得明明白白。`;
 
-addMsg('assistant', INIT);
-document.getElementById('userInput').focus();
+function initChat() {
+    const c = document.getElementById('chatContainer');
+    c.innerHTML = '';
+    addMsg('assistant', INIT, true); // true = not saved to history
+    // Replay saved history
+    history.forEach(m => addMsgDOM(m.role, m.content));
+    c.scrollTop = c.scrollHeight;
+    document.getElementById('userInput').focus();
+}
 
-function addMsg(role, text) {
+function addMsgDOM(role, text) {
     const c = document.getElementById('chatContainer');
     const d = document.createElement('div');
-    d.className = 'message '+role;
+    d.className = 'message ' + role;
     d.innerHTML = `<div class="avatar">${role==='user'?'&#x1F464;':'&#x1F9E0;'}</div><div class="msg-content">${esc(text)}</div>`;
-    c.appendChild(d); c.scrollTop = c.scrollHeight;
-    history.push({role,content:text});
+    c.appendChild(d);
+    c.scrollTop = c.scrollHeight;
+}
+
+function addMsg(role, text, skipHistory) {
+    addMsgDOM(role, text);
+    if (!skipHistory) {
+        history.push({role, content: text});
+        LS.set('chat_history', history);
+    }
 }
 
 function addLoad() {
@@ -276,9 +291,7 @@ async function sendMessage(){
     document.getElementById('sendBtn').disabled=true;
     addLoad();
     try{
-        const h=await health();
-        if(h.status!=='healthy') throw new Error(h.detail||'后端不可用');
-        const r=await fetch(API+'/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:msg,history:history.slice(0,-1)})});
+        const r=await fetch(API+'/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:msg,history:history})});
         rmLoad();
         if(!r.ok){const e=await r.json().catch(()=>({}));throw new Error(e.detail||'HTTP '+r.status);}
         const data=await r.json();
@@ -290,7 +303,14 @@ async function sendMessage(){
     }finally{document.getElementById('sendBtn').disabled=false;document.getElementById('userInput').focus();}
 }
 
-function clearChat(){document.getElementById('chatContainer').innerHTML='';history=[];addMsg('assistant',INIT);}
+function clearChat(){
+    history=[];
+    LS.set('chat_history',[]);
+    initChat();
+}
+
+// Boot chat
+initChat();
 
 // ========== Memory (localStorage) ==========
 function getEntries() { return LS.get('mem',[]); }
@@ -439,15 +459,9 @@ async function refreshDash(){
 
     document.getElementById('dashContent').innerHTML=`
         <div class="dash-grid">
-            <div class="dash-card"><div class="label">AI 模型</div><div class="value v-b">${aiInfo.ai_model||'未知'}</div></div>
             <div class="dash-card"><div class="label">近 7 天记录</div><div class="value ${recentDays>0?'v-g':'v-r'}">${recentDays} 天 / ${recentEntries.length} 条</div></div>
             <div class="dash-card"><div class="label">成长箱错误</div><div class="value ${errors.length>0?'v-a':'v-g'}">${errors.length}</div></div>
             <div class="dash-card"><div class="label">今日已记录</div><div class="value ${todayEntries.length>0?'v-g':'v-r'}">${todayEntries.length} 条</div></div>
-        </div>
-        <div class="dash-section"><h3>AI 配置</h3>
-            <div class="dash-row"><span class="l">API Base</span><span class="v">${aiInfo.ai_base||'-'}</span></div>
-            <div class="dash-row"><span class="l">Model</span><span class="v">${aiInfo.ai_model||'-'}</span></div>
-            <div class="dash-row"><span class="l">API Key</span><span class="v" style="color:${aiInfo.ai_key_configured?'#4ade80':'#f87171'}">${aiInfo.ai_key_configured?'已配置':'未配置'}</span></div>
         </div>
         <div class="dash-section"><h3>记忆统计</h3>
             <div class="dash-row"><span class="l">总记录数</span><span class="v">${entries.length}</span></div>
