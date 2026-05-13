@@ -9,8 +9,8 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-DEFAULT_AI_API_BASE = "https://api.iamhc.cn/v1"
-DEFAULT_AI_MODEL = "step-3.5-flash"
+DEFAULT_AI_API_BASE = "https://api.deepseek.com/anthropic"
+DEFAULT_AI_MODEL = "deepseek-v4-flash"
 STALE_API_HOSTS = ("52mx.net",)
 INVALID_MODELS = ("gpt-5.5", "codex")
 
@@ -99,6 +99,38 @@ def get_ai_config():
     return api_base, api_key, model
 
 
+def is_anthropic_api(api_base: str) -> bool:
+    return "/anthropic" in api_base.rstrip("/").lower()
+
+
+def build_anthropic_messages(messages: List[Dict]):
+    system_parts = []
+    user_messages = []
+
+    for message in messages:
+        role = message.get("role")
+        content = message.get("content", "")
+        if role == "system":
+            system_parts.append(content)
+        elif role in ("user", "assistant") and content:
+            user_messages.append({"role": role, "content": content})
+
+    return "\n\n".join(system_parts), user_messages
+
+
+def extract_anthropic_answer(data: Dict) -> str:
+    content = data.get("content", [])
+    if isinstance(content, list):
+        text_parts = []
+        for item in content:
+            if isinstance(item, dict) and item.get("type") == "text":
+                text_parts.append(item.get("text", ""))
+        return "".join(text_parts).strip()
+    if isinstance(content, str):
+        return content
+    return ""
+
+
 @app.get("/health")
 def health():
     api_base, api_key, model = get_ai_config()
@@ -131,18 +163,36 @@ async def chat(req: ChatRequest):
 
     async with httpx.AsyncClient(timeout=45.0) as client:
         try:
-            resp = await client.post(
-                f"{api_base}/chat/completions",
-                headers={
-                    "Authorization": f"Bearer {api_key}",
-                    "Content-Type": "application/json",
-                },
-                json={
-                    "model": model,
-                    "messages": messages,
-                    "temperature": 0.8,
-                },
-            )
+            if is_anthropic_api(api_base):
+                system_prompt, anthropic_messages = build_anthropic_messages(messages)
+                resp = await client.post(
+                    f"{api_base}/v1/messages",
+                    headers={
+                        "x-api-key": api_key,
+                        "Content-Type": "application/json",
+                        "anthropic-version": "2023-06-01",
+                    },
+                    json={
+                        "model": model,
+                        "max_tokens": 1000,
+                        "system": system_prompt,
+                        "messages": anthropic_messages,
+                        "temperature": 0.8,
+                    },
+                )
+            else:
+                resp = await client.post(
+                    f"{api_base}/chat/completions",
+                    headers={
+                        "Authorization": f"Bearer {api_key}",
+                        "Content-Type": "application/json",
+                    },
+                    json={
+                        "model": model,
+                        "messages": messages,
+                        "temperature": 0.8,
+                    },
+                )
 
             if resp.status_code == 401:
                 return {
@@ -151,8 +201,11 @@ async def chat(req: ChatRequest):
 
             resp.raise_for_status()
             data = resp.json()
-            answer = data["choices"][0]["message"]["content"]
-            return {"answer": answer}
+            if is_anthropic_api(api_base):
+                answer = extract_anthropic_answer(data)
+            else:
+                answer = data["choices"][0]["message"]["content"]
+            return {"answer": answer or "Error: Empty AI response"}
         except httpx.TimeoutException:
             return {
                 "answer": f"Error: AI API request timed out. Current api_base={api_base}, model={model}. Please check whether the upstream API key/model is valid."
