@@ -321,6 +321,29 @@
 
         const API_BASE = 'https://qa-project-backend.onrender.com';
 
+        async function checkBackend() {
+            try {
+                const resp = await fetch(`${API_BASE}/health`, { signal: AbortSignal.timeout(8000) });
+                if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+                return await resp.json();
+            } catch (e) {
+                return { status: 'error', detail: e.message };
+            }
+        }
+
+        // 页面加载时自动检查后端状态
+        (async () => {
+            const info = await checkBackend();
+            if (info.status === 'healthy') {
+                console.log('✅ 后端就绪:', info.ai_model);
+            } else {
+                const hint = info.detail && info.detail.includes('Failed to fetch')
+                    ? '网络不通（可能是 Render 冷启动、VPN/代理拦截、或域名被墙），请刷新重试。'
+                    : (info.detail || '未知错误');
+                addMessage('assistant', `⚠️ 后端当前不可用：${hint}\n\n前端页面正常，稍等 1-2 分钟后刷新页面试试。`);
+            }
+        })();
+
         async function sendMessage() {
             const message = userInput.value.trim();
             if (!message) return;
@@ -332,9 +355,9 @@
             addLoadingMessage();
 
             try {
-                const healthResponse = await fetch(`${API_BASE}/health`, { method: 'GET' });
-                if (!healthResponse.ok) {
-                    throw new Error(`后端健康检查失败：${healthResponse.status}`);
+                const healthData = await checkBackend();
+                if (healthData.status !== 'healthy') {
+                    throw new Error(healthData.detail || '后端不可用');
                 }
 
                 const response = await fetch(`${API_BASE}/chat`, {
@@ -351,17 +374,20 @@
                 removeLoadingMessage();
 
                 if (!response.ok) {
-                    const errorData = await response.json();
-                    throw new Error(errorData.detail || `HTTP error! status: ${response.status}`);
+                    const errorData = await response.json().catch(() => ({}));
+                    throw new Error(errorData.detail || `HTTP ${response.status}`);
                 }
 
                 const data = await response.json();
                 addMessage('assistant', data.answer);
             } catch (error) {
                 removeLoadingMessage();
-                const hint = error.message === 'Failed to fetch'
-                    ? '后端暂时不可达，通常是 Render 冷启动/部署中，等 1-2 分钟再试。'
-                    : error.message;
+                const msg = error.message;
+                const hint = msg.includes('Failed to fetch')
+                    ? '网络不通（Render 冷启动 / VPN 代理 / 被墙），刷新重试'
+                    : msg.includes('timeout')
+                    ? '请求超时，后端可能正在冷启动，等 30 秒再试'
+                    : msg;
                 addMessage('assistant', `⚠️ 错误：${hint}`);
             } finally {
                 sendBtn.disabled = false;
