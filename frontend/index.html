@@ -319,6 +319,8 @@
             if (loadingMessage) loadingMessage.remove();
         }
 
+        const API_BASE = 'https://qa-project-backend.onrender.com';
+
         async function sendMessage() {
             const message = userInput.value.trim();
             if (!message) return;
@@ -330,7 +332,12 @@
             addLoadingMessage();
 
             try {
-                const response = await fetch('https://qa-project-backend.onrender.com/chat', {
+                const healthResponse = await fetch(`${API_BASE}/health`, { method: 'GET' });
+                if (!healthResponse.ok) {
+                    throw new Error(`后端健康检查失败：${healthResponse.status}`);
+                }
+
+                const response = await fetch(`${API_BASE}/chat`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -352,7 +359,10 @@
                 addMessage('assistant', data.answer);
             } catch (error) {
                 removeLoadingMessage();
-                addMessage('assistant', `⚠️ 错误：${error.message}`);
+                const hint = error.message === 'Failed to fetch'
+                    ? '后端暂时不可达，通常是 Render 冷启动/部署中，等 1-2 分钟再试。'
+                    : error.message;
+                addMessage('assistant', `⚠️ 错误：${hint}`);
             } finally {
                 sendBtn.disabled = false;
                 userInput.focus();
