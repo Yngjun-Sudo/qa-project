@@ -29,8 +29,8 @@
         .page-body{flex:1;overflow-y:auto}
 
         /* Chat */
-        .chat-wrap{flex:1;overflow:hidden;display:flex;flex-direction:column}
-        .chat-container{flex:1;overflow-y:auto;padding:24px}
+        .chat-wrap{flex:1;overflow:hidden;display:flex;flex-direction:column;min-height:0}
+        .chat-container{flex:1;overflow-y:auto;padding:24px;min-height:0}
         .message{margin-bottom:20px;display:flex;gap:12px;align-items:flex-start}
         .message.user{flex-direction:row-reverse}
         .avatar{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0}
@@ -117,7 +117,7 @@
         .dash-row .l{font-size:13px;color:#cbd5e1}
         .dash-row .v{font-size:13px;font-weight:500}
 
-        ::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:#334155;border-radius:3px}
+        ::-webkit-scrollbar{width:8px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:#334155;border-radius:4px}::-webkit-scrollbar-thumb:hover{background:#475569}
         @media(max-width:640px){
             .sidebar{width:56px}.sidebar-brand h1,.sidebar-brand .sub,.nav-group-label,.nav-item span{display:none}
             .nav-item{justify-content:center;padding:12px}.dash-grid{grid-template-columns:1fr}.gb-stats{grid-template-columns:1fr}
